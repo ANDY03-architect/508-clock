@@ -17,104 +17,108 @@ html,body{
 }
 main{
   width:100vw;height:100vh;
-  display:grid;
-  grid-template-columns:75% 25%;
-  gap:10px;
-  padding:10px;
+  display:grid;grid-template-columns:48% 52%;
+  gap:12px;padding:12px;
   background:linear-gradient(180deg,#07090d,#030405)
 }
 .card{
   border:1px solid #232b36;
-  border-radius:22px;
-  background:#0d1117;
-  min-width:0;
-  min-height:0
+  border-radius:24px;
+  background:#0d1117
 }
 .clock{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:12px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center
 }
 #time{
-  font-size:clamp(105px,18vw,205px);
-  font-weight:780;
-  line-height:.88;
-  letter-spacing:-.07em;
+  font-size:clamp(72px,13vw,150px);
+  font-weight:760;
+  line-height:.9;
+  letter-spacing:-.06em;
   font-variant-numeric:tabular-nums;
-  white-space:nowrap;
+  white-space:nowrap
 }
 #sec{
-  font-size:.18em;
+  font-size:.22em;
   color:#8e99a8;
-  margin-left:.14em;
+  margin-left:.12em;
   vertical-align:top;
-  letter-spacing:0;
+  letter-spacing:0
 }
 #date{
-  margin-top:26px;
-  font-size:clamp(22px,3.3vw,38px);
+  margin-top:22px;
+  font-size:clamp(18px,2.7vw,30px);
   color:#d6dee9;
-  font-weight:650;
+  font-weight:600
 }
 .bus{
-  padding:18px 14px;
+  padding:24px;
   display:flex;
-  flex-direction:column;
+  flex-direction:column
+}
+.top{
+  display:flex;
+  align-items:center;
   justify-content:space-between;
+  gap:15px
 }
 .route{
-  font-size:clamp(32px,4vw,52px);
+  font-size:clamp(36px,5.5vw,62px);
   font-weight:850;
   background:#f8fafc;
   color:#111827;
-  border-radius:14px;
-  padding:8px 12px;
-  line-height:1;
-  display:inline-block;
-  width:max-content;
+  border-radius:16px;
+  padding:10px 16px;
+  line-height:1
 }
-.direction{
-  margin-top:14px;
-  color:#cbd5df;
-  font-size:clamp(14px,1.8vw,20px);
-  line-height:1.35;
+.dir{
+  text-align:right
+}
+.dir small{
+  display:block;
+  color:#8e99a8;
+  font-size:13px
+}
+.dir strong{
+  font-size:clamp(19px,2.8vw,30px)
 }
 .stop{
-  margin-top:12px;
-  color:#8e99a8;
-  font-size:clamp(13px,1.6vw,18px);
+  margin-top:22px;
+  color:#b7c0cc;
+  font-size:clamp(16px,2.2vw,22px)
 }
-.stop strong{color:#fff}
-.etaBox{
-  margin-top:auto;
-  margin-bottom:auto;
+.stop b{color:#fff}
+.center{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center
 }
-.etaLabel{
+.label{
+  font-size:14px;
   color:#8e99a8;
-  font-size:12px;
-  margin-bottom:4px;
+  margin-bottom:5px
 }
 #eta{
-  font-size:clamp(42px,6vw,72px);
+  font-size:clamp(58px,9vw,104px);
   font-weight:850;
-  line-height:1;
   letter-spacing:-.05em;
-  word-break:keep-all;
+  line-height:1
 }
 #sub{
-  margin-top:8px;
-  color:#b9c3ce;
-  font-size:12px;
-  line-height:1.35;
+  margin-top:12px;
+  color:#c9d3df;
+  font-size:clamp(14px,1.9vw,19px)
 }
 .footer{
   border-top:1px solid #232b36;
-  padding-top:8px;
-  color:#6f7a88;
-  font-size:10px;
+  padding-top:12px;
+  color:#8e99a8;
+  font-size:12px;
+  display:flex;
+  justify-content:space-between;
+  gap:8px
 }
 .ok{color:#86efac}
 .warn{color:#fde68a}
@@ -123,32 +127,10 @@ main{
 @media(orientation:portrait){
   main{
     grid-template-columns:1fr;
-    grid-template-rows:72% 28%;
+    grid-template-rows:39% 61%
   }
-  #time{
-    font-size:clamp(100px,28vw,180px);
-  }
-  #date{
-    font-size:clamp(20px,5vw,32px);
-    margin-top:18px;
-  }
-  .bus{
-    display:grid;
-    grid-template-columns:auto 1fr auto;
-    grid-template-rows:auto auto;
-    align-items:center;
-    gap:8px 14px;
-  }
-  .route{grid-row:1 / 3}
-  .direction{margin:0}
-  .stop{margin:0}
-  .etaBox{
-    grid-column:3;
-    grid-row:1 / 3;
-    margin:0;
-    text-align:right;
-  }
-  .footer{display:none}
+  #time{font-size:clamp(72px,22vw,130px)}
+  #date{margin-top:12px}
 }
 </style>
 </head>
@@ -162,35 +144,38 @@ main{
 </section>
 
 <section class="card bus">
-  <div>
+
+  <div class="top">
     <div class="route">508</div>
-
-    <div class="direction">
-      往<br><strong>大同之家</strong>
-    </div>
-
-    <div class="stop">
-      <strong>憲兵學校</strong>
+    <div class="dir">
+      <small>方向</small>
+      <strong>往 大同之家</strong>
     </div>
   </div>
 
-  <div class="etaBox">
-    <div class="etaLabel">預估到站</div>
+  <div class="stop">
+    站牌　<b>憲兵學校</b>
+  </div>
+
+  <div class="center">
+    <div class="label">預估到站</div>
     <div id="eta">連線中…</div>
-    <div id="sub">讀取即時資料</div>
+    <div id="sub">正在讀取即時公車資料</div>
   </div>
 
-  <div class="footer" id="footer">
-    每 30 秒更新
+  <div class="footer">
+    <span id="status">等待資料</span>
+    <span id="updated">--:--:--</span>
   </div>
+
 </section>
-
 </main>
 
 <script>
 (function(){
 
-  var WORKER = "https://508-bus.teddy-chin24.workers.dev/";
+  var WORKER =
+    "https://508-bus.teddy-chin24.workers.dev/";
 
   function pad(n){
     return ("0"+n).slice(-2);
@@ -223,7 +208,7 @@ main{
     if(!v){
       eta.textContent="無資料";
       eta.className="warn";
-      sub.textContent="目前沒有預估";
+      sub.textContent="目前沒有到站預估";
       return;
     }
 
@@ -239,7 +224,7 @@ main{
       }
 
       sub.textContent =
-        n<=2 ? "準備出門" :
+        n<=2 ? "建議準備出門" :
         "即時公車預估";
 
       return;
@@ -251,15 +236,21 @@ main{
       v.indexOf("進站中")>=0
     ){
       eta.className="ok";
-      sub.textContent="車輛已接近";
+      sub.textContent="車輛已接近本站";
       return;
     }
 
     eta.className="warn";
-    sub.textContent="目前沒有倒數";
+    sub.textContent="目前沒有一般倒數時間";
   }
 
   async function refresh(){
+
+    var status=document.getElementById("status");
+    var updated=document.getElementById("updated");
+
+    status.textContent="更新中…";
+    status.className="";
 
     try{
 
@@ -281,8 +272,12 @@ main{
       showStatus(data.status);
 
       var d=new Date();
-      document.getElementById("footer").textContent =
-        "更新 "+pad(d.getHours())+":"+
+
+      status.textContent="Cloudflare 即時資料";
+      status.className="ok";
+
+      updated.textContent =
+        pad(d.getHours())+":"+
         pad(d.getMinutes())+":"+
         pad(d.getSeconds());
 
@@ -295,10 +290,12 @@ main{
         "bad";
 
       document.getElementById("sub").textContent=
-        e.message||e;
+        "錯誤："+(e.message||e);
 
-      document.getElementById("footer").textContent=
+      status.textContent=
         "Worker 連線失敗";
+
+      status.className="bad";
     }
   }
 
