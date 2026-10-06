@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#05070a">
+<title>508 公車桌鐘</title>
+
+<style>
+*{box-sizing:border-box}
+html,body{
+  margin:0;width:100%;height:100%;overflow:hidden;
+  background:#05070a;color:#fff;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif
+}
+main{
+  width:100vw;height:100vh;
+  display:grid;
+  grid-template-columns:75% 25%;
+  gap:10px;
+  padding:10px;
+  background:linear-gradient(180deg,#07090d,#030405)
+}
+.card{
+  border:1px solid #232b36;
+  border-radius:22px;
+  background:#0d1117;
+  min-width:0;
+  min-height:0
+}
+.clock{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:12px;
+}
+#time{
+  font-size:clamp(105px,18vw,205px);
+  font-weight:780;
+  line-height:.88;
+  letter-spacing:-.07em;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+#sec{
+  font-size:.18em;
+  color:#8e99a8;
+  margin-left:.14em;
+  vertical-align:top;
+  letter-spacing:0;
+}
+#date{
+  margin-top:26px;
+  font-size:clamp(22px,3.3vw,38px);
+  color:#d6dee9;
+  font-weight:650;
+}
+.bus{
+  padding:18px 14px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.route{
+  font-size:clamp(32px,4vw,52px);
+  font-weight:850;
+  background:#f8fafc;
+  color:#111827;
+  border-radius:14px;
+  padding:8px 12px;
+  line-height:1;
+  display:inline-block;
+  width:max-content;
+}
+.direction{
+  margin-top:14px;
+  color:#cbd5df;
+  font-size:clamp(14px,1.8vw,20px);
+  line-height:1.35;
+}
+.stop{
+  margin-top:12px;
+  color:#8e99a8;
+  font-size:clamp(13px,1.6vw,18px);
+}
+.stop strong{color:#fff}
+.etaBox{
+  margin-top:auto;
+  margin-bottom:auto;
+}
+.etaLabel{
+  color:#8e99a8;
+  font-size:12px;
+  margin-bottom:4px;
+}
+#eta{
+  font-size:clamp(42px,6vw,72px);
+  font-weight:850;
+  line-height:1;
+  letter-spacing:-.05em;
+  word-break:keep-all;
+}
+#sub{
+  margin-top:8px;
+  color:#b9c3ce;
+  font-size:12px;
+  line-height:1.35;
+}
+.footer{
+  border-top:1px solid #232b36;
+  padding-top:8px;
+  color:#6f7a88;
+  font-size:10px;
+}
+.ok{color:#86efac}
+.warn{color:#fde68a}
+.bad{color:#fca5a5}
+
+@media(orientation:portrait){
+  main{
+    grid-template-columns:1fr;
+    grid-template-rows:72% 28%;
+  }
+  #time{
+    font-size:clamp(100px,28vw,180px);
+  }
+  #date{
+    font-size:clamp(20px,5vw,32px);
+    margin-top:18px;
+  }
+  .bus{
+    display:grid;
+    grid-template-columns:auto 1fr auto;
+    grid-template-rows:auto auto;
+    align-items:center;
+    gap:8px 14px;
+  }
+  .route{grid-row:1 / 3}
+  .direction{margin:0}
+  .stop{margin:0}
+  .etaBox{
+    grid-column:3;
+    grid-row:1 / 3;
+    margin:0;
+    text-align:right;
+  }
+  .footer{display:none}
+}
+</style>
+</head>
+
+<body>
+<main>
+
+<section class="card clock">
+  <div id="time">--:--<span id="sec">--</span></div>
+  <div id="date">--</div>
+</section>
+
+<section class="card bus">
+  <div>
+    <div class="route">508</div>
+
+    <div class="direction">
+      往<br><strong>大同之家</strong>
+    </div>
+
+    <div class="stop">
+      <strong>憲兵學校</strong>
+    </div>
+  </div>
+
+  <div class="etaBox">
+    <div class="etaLabel">預估到站</div>
+    <div id="eta">連線中…</div>
+    <div id="sub">讀取即時資料</div>
+  </div>
+
+  <div class="footer" id="footer">
+    每 30 秒更新
+  </div>
+</section>
+
+</main>
+
+<script>
+(function(){
+
+  var WORKER = "https://508-bus.teddy-chin24.workers.dev/";
+
+  function pad(n){
+    return ("0"+n).slice(-2);
+  }
+
+  function updateClock(){
+    var d=new Date();
+
+    document.getElementById("time").innerHTML =
+      pad(d.getHours())+":"+pad(d.getMinutes())+
+      '<span id="sec">'+pad(d.getSeconds())+"</span>";
+
+    var days=[
+      "星期日","星期一","星期二",
+      "星期三","星期四","星期五","星期六"
+    ];
+
+    document.getElementById("date").textContent =
+      (d.getMonth()+1)+" 月 "+d.getDate()+" 日　"+
+      days[d.getDay()];
+  }
+
+  function showStatus(v){
+
+    var eta=document.getElementById("eta");
+    var sub=document.getElementById("sub");
+
+    eta.className="";
+
+    if(!v){
+      eta.textContent="無資料";
+      eta.className="warn";
+      sub.textContent="目前沒有預估";
+      return;
+    }
+
+    eta.textContent=v;
+
+    var m=v.match(/^(\d+)分$/);
+
+    if(m){
+      var n=parseInt(m[1],10);
+
+      if(n<=5){
+        eta.className="ok";
+      }
+
+      sub.textContent =
+        n<=2 ? "準備出門" :
+        "即時公車預估";
+
+      return;
+    }
+
+    if(
+      v.indexOf("即將到站")>=0 ||
+      v.indexOf("將到站")>=0 ||
+      v.indexOf("進站中")>=0
+    ){
+      eta.className="ok";
+      sub.textContent="車輛已接近";
+      return;
+    }
+
+    eta.className="warn";
+    sub.textContent="目前沒有倒數";
+  }
+
+  async function refresh(){
+
+    try{
+
+      var r=await fetch(
+        WORKER+"?t="+Date.now(),
+        {cache:"no-store"}
+      );
+
+      if(!r.ok){
+        throw new Error("HTTP "+r.status);
+      }
+
+      var data=await r.json();
+
+      if(data.error){
+        throw new Error(data.error);
+      }
+
+      showStatus(data.status);
+
+      var d=new Date();
+      document.getElementById("footer").textContent =
+        "更新 "+pad(d.getHours())+":"+
+        pad(d.getMinutes())+":"+
+        pad(d.getSeconds());
+
+    }catch(e){
+
+      document.getElementById("eta").textContent=
+        "讀取失敗";
+
+      document.getElementById("eta").className=
+        "bad";
+
+      document.getElementById("sub").textContent=
+        e.message||e;
+
+      document.getElementById("footer").textContent=
+        "Worker 連線失敗";
+    }
+  }
+
+  updateClock();
+  setInterval(updateClock,1000);
+
+  refresh();
+  setInterval(refresh,30000);
+
+  document.addEventListener("visibilitychange",function(){
+    if(!document.hidden){
+      updateClock();
+      refresh();
+    }
+  });
+
+})();
+</script>
+</body>
+</html>
