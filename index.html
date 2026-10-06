@@ -1,350 +1,317 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#05070a">
-  <title>508 公車桌鐘</title>
-  <style>
-    :root{
-      color-scheme: dark;
-      --bg:#05070a;
-      --panel:#0d1117;
-      --panel2:#121821;
-      --text:#f7f9fb;
-      --muted:#8e99a8;
-      --line:#232b36;
-      --accent:#7dd3fc;
-      --good:#86efac;
-      --warn:#fde68a;
-      --bad:#fca5a5;
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0;width:100%;height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang TC","Noto Sans TC",sans-serif;color:var(--text);overflow:hidden}
-    body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
-    main{
-      width:100vw;height:100vh;
-      display:grid;
-      grid-template-columns:1.08fr .92fr;
-      gap:14px;
-      padding:14px;
-      background:
-        radial-gradient(circle at 18% 20%,rgba(125,211,252,.08),transparent 32%),
-        linear-gradient(180deg,#06080b,#030406);
-    }
-    .card{
-      min-width:0;
-      border:1px solid var(--line);
-      border-radius:24px;
-      background:linear-gradient(180deg,rgba(17,22,29,.96),rgba(9,12,17,.96));
-      box-shadow:0 20px 50px rgba(0,0,0,.28);
-    }
-    .clockCard{
-      display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
-      padding:18px;
-    }
-    #time{
-      font-variant-numeric:tabular-nums;
-      font-size:clamp(72px,14vw,150px);
-      line-height:.9;
-      letter-spacing:-.06em;
-      font-weight:750;
-      white-space:nowrap;
-    }
-    #seconds{
-      font-size:.25em;
-      letter-spacing:-.02em;
-      color:var(--muted);
-      margin-left:.12em;
-      font-weight:600;
-      vertical-align:top;
-    }
-    #date{
-      margin-top:22px;
-      font-size:clamp(19px,3.1vw,32px);
-      color:#d6dee9;
-      font-weight:600;
-      letter-spacing:.02em;
-    }
-    .busCard{
-      display:flex;flex-direction:column;
-      padding:22px;
-      position:relative;
-      overflow:hidden;
-    }
-    .topline{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-    .routeBlock{display:flex;align-items:center;gap:14px}
-    .routeBadge{
-      background:#f8fafc;color:#111827;
-      border-radius:16px;
-      font-size:clamp(32px,5vw,55px);
-      font-weight:850;
-      line-height:1;
-      padding:12px 16px 10px;
-      letter-spacing:-.04em;
-    }
-    .direction .small{font-size:13px;color:var(--muted);margin-bottom:5px}
-    .direction .name{font-size:clamp(20px,3vw,30px);font-weight:700}
-    .dot{width:9px;height:9px;border-radius:50%;background:var(--good);box-shadow:0 0 16px rgba(134,239,172,.6);margin-top:7px;flex:0 0 auto}
-    .station{
-      margin-top:22px;
-      color:var(--muted);
-      font-size:clamp(15px,2.2vw,21px);
-    }
-    .station strong{color:#dce4ee}
-    .etaWrap{
-      flex:1;
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-      align-items:flex-start;
-      min-height:0;
-    }
-    .etaLabel{font-size:14px;color:var(--muted);margin-bottom:3px}
-    #eta{
-      font-size:clamp(58px,10vw,108px);
-      line-height:1;
-      font-weight:850;
-      letter-spacing:-.055em;
-      font-variant-numeric:tabular-nums;
-      white-space:nowrap;
-    }
-    #etaSub{
-      margin-top:12px;
-      min-height:1.4em;
-      font-size:clamp(15px,2.2vw,21px);
-      color:#c9d3df;
-    }
-    .footer{
-      display:flex;justify-content:space-between;align-items:center;gap:10px;
-      padding-top:13px;border-top:1px solid var(--line);
-      color:var(--muted);font-size:12px;
-    }
-    .status{display:flex;align-items:center;gap:7px;min-width:0}
-    #statusText{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .links{display:flex;gap:8px;align-items:center}
-    a{
-      color:#b9e8fb;text-decoration:none;border:1px solid #2b3947;
-      border-radius:999px;padding:6px 9px;background:#0b141c;
-      white-space:nowrap;
-    }
-    .error #eta{font-size:clamp(30px,5vw,54px);letter-spacing:-.02em}
-    @media (orientation:portrait){
-      main{grid-template-columns:1fr;grid-template-rows:.82fr 1.18fr}
-      #time{font-size:clamp(72px,22vw,130px)}
-      .clockCard{padding:10px}
-      #date{margin-top:12px}
-    }
-    @media (max-height:420px) and (orientation:landscape){
-      main{gap:10px;padding:10px}
-      .card{border-radius:20px}
-      .busCard{padding:16px}
-      .station{margin-top:12px}
-      .footer{padding-top:8px}
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#05070a">
+<title>508 公車桌鐘</title>
+
+<style>
+*{box-sizing:border-box}
+html,body{
+  margin:0;width:100%;height:100%;overflow:hidden;
+  background:#05070a;color:#fff;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC",sans-serif
+}
+main{
+  width:100vw;height:100vh;
+  display:grid;grid-template-columns:48% 52%;
+  gap:12px;padding:12px;
+  background:linear-gradient(180deg,#07090d,#030405)
+}
+.card{
+  border:1px solid #232b36;
+  border-radius:24px;
+  background:#0d1117
+}
+.clock{
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center
+}
+#time{
+  font-size:clamp(72px,13vw,150px);
+  font-weight:760;
+  line-height:.9;
+  letter-spacing:-.06em;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap
+}
+#sec{
+  font-size:.22em;
+  color:#8e99a8;
+  margin-left:.12em;
+  vertical-align:top;
+  letter-spacing:0
+}
+#date{
+  margin-top:22px;
+  font-size:clamp(18px,2.7vw,30px);
+  color:#d6dee9;
+  font-weight:600
+}
+.bus{
+  padding:24px;
+  display:flex;
+  flex-direction:column
+}
+.top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px
+}
+.route{
+  font-size:clamp(36px,5.5vw,62px);
+  font-weight:850;
+  background:#f8fafc;
+  color:#111827;
+  border-radius:16px;
+  padding:10px 16px;
+  line-height:1
+}
+.dir{
+  text-align:right
+}
+.dir small{
+  display:block;
+  color:#8e99a8;
+  font-size:13px
+}
+.dir strong{
+  font-size:clamp(19px,2.8vw,30px)
+}
+.stop{
+  margin-top:22px;
+  color:#b7c0cc;
+  font-size:clamp(16px,2.2vw,22px)
+}
+.stop b{color:#fff}
+.center{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center
+}
+.label{
+  font-size:14px;
+  color:#8e99a8;
+  margin-bottom:5px
+}
+#eta{
+  font-size:clamp(58px,9vw,104px);
+  font-weight:850;
+  letter-spacing:-.05em;
+  line-height:1
+}
+#sub{
+  margin-top:12px;
+  color:#c9d3df;
+  font-size:clamp(14px,1.9vw,19px)
+}
+.footer{
+  border-top:1px solid #232b36;
+  padding-top:12px;
+  color:#8e99a8;
+  font-size:12px;
+  display:flex;
+  justify-content:space-between;
+  gap:8px
+}
+.ok{color:#86efac}
+.warn{color:#fde68a}
+.bad{color:#fca5a5}
+
+@media(orientation:portrait){
+  main{
+    grid-template-columns:1fr;
+    grid-template-rows:39% 61%
+  }
+  #time{font-size:clamp(72px,22vw,130px)}
+  #date{margin-top:12px}
+}
+</style>
 </head>
+
 <body>
 <main>
-  <section class="card clockCard">
-    <div id="time">--:--<span id="seconds">--</span></div>
-    <div id="date">正在讀取時間…</div>
-  </section>
 
-  <section class="card busCard" id="busCard">
-    <div class="topline">
-      <div class="routeBlock">
-        <div class="routeBadge">508</div>
-        <div class="direction">
-          <div class="small">行車方向</div>
-          <div class="name">往 大同之家</div>
-        </div>
-      </div>
-      <div class="dot" id="dot"></div>
+<section class="card clock">
+  <div id="time">--:--<span id="sec">--</span></div>
+  <div id="date">--</div>
+</section>
+
+<section class="card bus">
+
+  <div class="top">
+    <div class="route">508</div>
+    <div class="dir">
+      <small>方向</small>
+      <strong>往 大同之家</strong>
     </div>
+  </div>
 
-    <div class="station">站牌　<strong>憲兵學校［向北］</strong></div>
+  <div class="stop">
+    站牌　<b>憲兵學校</b>
+  </div>
 
-    <div class="etaWrap">
-      <div class="etaLabel">預估到站</div>
-      <div id="eta">讀取中…</div>
-      <div id="etaSub">正在連線新北市政府公車開放資料</div>
-    </div>
+  <div class="center">
+    <div class="label">預估到站</div>
+    <div id="eta">連線中…</div>
+    <div id="sub">正在讀取即時公車資料</div>
+  </div>
 
-    <div class="footer">
-      <div class="status">
-        <span>●</span>
-        <span id="statusText">等待更新</span>
-      </div>
-      <div class="links">
-        <a href="https://ebus.gov.taipei/VirtualStop/2487000700" target="_blank" rel="noopener">官方站牌</a>
-        <a href="#" id="refreshBtn">更新</a>
-      </div>
-    </div>
-  </section>
+  <div class="footer">
+    <span id="status">等待資料</span>
+    <span id="updated">--:--:--</span>
+  </div>
+
+</section>
 </main>
 
 <script>
-(() => {
-  const DATASETS = {
-    routes: '0ee4e6bf-cee6-4ec8-8fe1-71f544015127',
-    stops:  '34b402a8-53d9-483d-9406-24a682c2d6dc',
-    eta:    '07f7ccb3-ed00-43c4-966d-08e9dab24e95'
-  };
-  const API = 'https://data.ntpc.gov.tw/api/datasets/';
-  const REFRESH_MS = 120000; // 官方資料約每 2 分鐘更新
+(function(){
 
-  const $ = id => document.getElementById(id);
-  const timeEl = $('time'), dateEl = $('date'), etaEl = $('eta'), etaSub = $('etaSub');
-  const statusText = $('statusText'), dot = $('dot'), busCard = $('busCard');
+  var WORKER =
+    "https://508-bus.teddy-chin24.workers.dev/";
 
-  function getKey(obj, wanted){
-    if (!obj || typeof obj !== 'object') return undefined;
-    const key = Object.keys(obj).find(k => k.toLowerCase() === wanted.toLowerCase());
-    return key ? obj[key] : undefined;
-  }
-  function rowsFrom(payload){
-    if (Array.isArray(payload)) return payload;
-    if (!payload || typeof payload !== 'object') return [];
-    for (const k of ['data','result','records','items']){
-      const v = getKey(payload,k);
-      if (Array.isArray(v)) return v;
-      if (v && typeof v === 'object'){
-        const nested = rowsFrom(v);
-        if (nested.length) return nested;
-      }
-    }
-    for (const v of Object.values(payload)){
-      if (Array.isArray(v)) return v;
-    }
-    return [];
-  }
-  function apiUrl(dataset, {filter='', size=500} = {}){
-    let u = `${API}${dataset}/json?page=0&size=${size}`;
-    if (filter) u += `&$filter=${encodeURIComponent(filter)}`;
-    return u;
-  }
-  async function getJson(url){
-    const r = await fetch(url, {cache:'no-store', headers:{'Accept':'application/json'}});
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    return r.json();
+  function pad(n){
+    return ("0"+n).slice(-2);
   }
 
   function updateClock(){
-    const now = new Date();
-    const h = String(now.getHours()).padStart(2,'0');
-    const m = String(now.getMinutes()).padStart(2,'0');
-    const s = String(now.getSeconds()).padStart(2,'0');
-    timeEl.innerHTML = `${h}:${m}<span id="seconds">${s}</span>`;
-    const weekdays = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
-    dateEl.textContent = `${now.getMonth()+1} 月 ${now.getDate()} 日　${weekdays[now.getDay()]}`;
+    var d=new Date();
+
+    document.getElementById("time").innerHTML =
+      pad(d.getHours())+":"+pad(d.getMinutes())+
+      '<span id="sec">'+pad(d.getSeconds())+"</span>";
+
+    var days=[
+      "星期日","星期一","星期二",
+      "星期三","星期四","星期五","星期六"
+    ];
+
+    document.getElementById("date").textContent =
+      (d.getMonth()+1)+" 月 "+d.getDate()+" 日　"+
+      days[d.getDay()];
   }
 
-  function etaText(raw){
-    const n = Number(raw);
-    if (Number.isFinite(n) && n >= 0){
-      if (n <= 30) return {main:'即將到站', sub:'準備出門', tone:'good'};
-      if (n < 60) return {main:'1 分鐘', sub:`約 ${Math.max(1,Math.round(n))} 秒`, tone:'good'};
-      const min = Math.max(1, Math.round(n/60));
-      return {main:`${min} 分鐘`, sub:`約 ${min} 分鐘後抵達`, tone:min <= 5 ? 'good':'normal'};
+  function showStatus(v){
+
+    var eta=document.getElementById("eta");
+    var sub=document.getElementById("sub");
+
+    eta.className="";
+
+    if(!v){
+      eta.textContent="無資料";
+      eta.className="warn";
+      sub.textContent="目前沒有到站預估";
+      return;
     }
-    // 常見的負值/空值通常表示尚未發車、交管或無預估；避免硬猜代碼意義
-    return {main:'尚無預估', sub:'可能尚未發車或目前沒有有效 ETA', tone:'warn'};
-  }
 
-  function setTone(tone){
-    dot.style.background = tone === 'good' ? 'var(--good)' : tone === 'warn' ? 'var(--warn)' : 'var(--accent)';
-    dot.style.boxShadow = tone === 'good'
-      ? '0 0 16px rgba(134,239,172,.6)'
-      : tone === 'warn' ? '0 0 16px rgba(253,230,138,.45)' : '0 0 16px rgba(125,211,252,.45)';
-  }
+    eta.textContent=v;
 
-  async function resolve508(){
-    // 1. 找 508 的 routeid
-    const routesPayload = await getJson(apiUrl(DATASETS.routes, {size:2000}));
-    const routes = rowsFrom(routesPayload);
-    let route = routes.find(r => String(getKey(r,'namezh') ?? '').trim() === '508');
-    if (!route){
-      route = routes.find(r => String(getKey(r,'namezh') ?? '').includes('508'));
+    var m=v.match(/^(\d+)分$/);
+
+    if(m){
+      var n=parseInt(m[1],10);
+
+      if(n<=5){
+        eta.className="ok";
+      }
+
+      sub.textContent =
+        n<=2 ? "建議準備出門" :
+        "即時公車預估";
+
+      return;
     }
-    if (!route) throw new Error('找不到 508 路線資料');
-    const routeId = String(getKey(route,'id') ?? '').trim();
-    if (!routeId) throw new Error('508 缺少 routeid');
 
-    // 2. 找 508 在「憲兵學校」的去程站牌；508 去程目標為大同之家
-    const stopsPayload = await getJson(apiUrl(DATASETS.stops, {
-      filter:`routeid eq ${routeId}`, size:500
-    }));
-    const stops = rowsFrom(stopsPayload).filter(s =>
-      String(getKey(s,'namezh') ?? '').trim().includes('憲兵學校')
-    );
-    if (!stops.length) throw new Error('找不到憲兵學校站牌資料');
+    if(
+      v.indexOf("即將到站")>=0 ||
+      v.indexOf("將到站")>=0 ||
+      v.indexOf("進站中")>=0
+    ){
+      eta.className="ok";
+      sub.textContent="車輛已接近本站";
+      return;
+    }
 
-    let stop = stops.find(s => String(getKey(s,'goback') ?? '').trim() === '0') || stops[0];
-    const stopId = String(getKey(stop,'id') ?? '').trim();
-    const goBack = String(getKey(stop,'goback') ?? '0').trim();
-    if (!stopId) throw new Error('站牌缺少 stopid');
-
-    return {routeId, stopId, goBack};
+    eta.className="warn";
+    sub.textContent="目前沒有一般倒數時間";
   }
 
-  let resolved = null;
-  async function refreshBus(){
-    busCard.classList.remove('error');
-    statusText.textContent = '更新中…';
-    setTone('normal');
+  async function refresh(){
+
+    var status=document.getElementById("status");
+    var updated=document.getElementById("updated");
+
+    status.textContent="更新中…";
+    status.className="";
+
     try{
-      if (!resolved) resolved = await resolve508();
 
-      const etaPayload = await getJson(apiUrl(DATASETS.eta, {
-        filter:`routeid eq ${resolved.routeId}`, size:500
-      }));
-      const rows = rowsFrom(etaPayload);
-      const row = rows.find(x =>
-        String(getKey(x,'stopid') ?? '').trim() === resolved.stopId &&
-        String(getKey(x,'goback') ?? '').trim() === resolved.goBack
-      ) || rows.find(x =>
-        String(getKey(x,'stopid') ?? '').trim() === resolved.stopId
+      var r=await fetch(
+        WORKER+"?t="+Date.now(),
+        {cache:"no-store"}
       );
 
-      if (!row) throw new Error('目前查不到這個站牌的 ETA');
+      if(!r.ok){
+        throw new Error("HTTP "+r.status);
+      }
 
-      const raw = getKey(row,'estimatetime');
-      const t = etaText(raw);
-      etaEl.textContent = t.main;
-      etaSub.textContent = t.sub;
-      setTone(t.tone);
+      var data=await r.json();
 
-      const now = new Date();
-      statusText.textContent = `政府資料更新｜${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-    }catch(err){
-      console.error(err);
-      busCard.classList.add('error');
-      etaEl.textContent = '即時資料暫時無法讀取';
-      etaSub.textContent = '可點右下「官方站牌」查看；稍後會自動重試';
-      statusText.textContent = '連線失敗';
-      dot.style.background = 'var(--bad)';
-      dot.style.boxShadow = '0 0 16px rgba(252,165,165,.45)';
-      // 下次重試重新解析 route / stop，避免暫時性資料錯誤卡死
-      resolved = null;
+      if(data.error){
+        throw new Error(data.error);
+      }
+
+      showStatus(data.status);
+
+      var d=new Date();
+
+      status.textContent="Cloudflare 即時資料";
+      status.className="ok";
+
+      updated.textContent =
+        pad(d.getHours())+":"+
+        pad(d.getMinutes())+":"+
+        pad(d.getSeconds());
+
+    }catch(e){
+
+      document.getElementById("eta").textContent=
+        "讀取失敗";
+
+      document.getElementById("eta").className=
+        "bad";
+
+      document.getElementById("sub").textContent=
+        "錯誤："+(e.message||e);
+
+      status.textContent=
+        "Worker 連線失敗";
+
+      status.className="bad";
     }
   }
 
-  $('refreshBtn').addEventListener('click', e => { e.preventDefault(); refreshBus(); });
-
   updateClock();
-  setInterval(updateClock, 1000);
-  refreshBus();
-  setInterval(refreshBus, REFRESH_MS);
+  setInterval(updateClock,1000);
 
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) {
+  refresh();
+  setInterval(refresh,30000);
+
+  document.addEventListener("visibilitychange",function(){
+    if(!document.hidden){
       updateClock();
-      refreshBus();
+      refresh();
     }
   });
+
 })();
 </script>
 </body>
