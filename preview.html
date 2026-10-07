@@ -17,7 +17,7 @@ html,body{
 }
 main{
   width:100vw;height:100vh;
-  display:grid;grid-template-columns:48% 52%;
+  display:grid;grid-template-columns:minmax(0,48fr) minmax(0,52fr);
   gap:12px;padding:12px;
   background:linear-gradient(180deg,#07090d,#030405)
 }
@@ -27,6 +27,7 @@ main{
   background:#0d1117
 }
 .clock{
+  position:relative;min-width:0;
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;
   text-align:center
@@ -132,18 +133,72 @@ main{
   #time{font-size:clamp(72px,22vw,130px)}
   #date{margin-top:12px}
 }
+
+/* A single button switches between the commute display and a quiet desk clock. */
+.mode-toggle{
+  position:absolute;top:14px;left:14px;z-index:2;
+  min-height:44px;padding:10px 14px;
+  border:1px solid #343b45;border-radius:999px;
+  background:#171d25;color:#d6dee9;
+  font:500 13px -apple-system,BlinkMacSystemFont,"PingFang TC",sans-serif;
+  cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent
+}
+.mode-toggle:focus-visible{outline:2px solid #ffc16a;outline-offset:4px}
+.mode-toggle:active{background:#303743}
+.clock-only main{
+  display:flex;padding:0;gap:0;background:#000
+}
+.clock-only .clock{
+  width:100%;height:100%;border:0;border-radius:0;background:#000;
+  padding:64px 24px 40px
+}
+.clock-only .bus{display:none}
+.clock-only #time{
+  font-size:min(29vw,62vh);font-weight:700;
+  letter-spacing:-.055em;line-height:.95;color:#ffc16a
+}
+.clock-only #sec{display:none}
+.clock-only #date{
+  margin-top:24px;font-size:clamp(16px,3vw,32px);
+  font-weight:500;letter-spacing:.06em;color:#b38b58
+}
+.clock-only .mode-toggle{
+  left:auto;right:18px;top:14px;
+  background:#15120e;border-color:#463521;color:#d8b17c
+}
+@supports(padding:env(safe-area-inset-top)){
+  .clock-only .mode-toggle{
+    top:calc(14px + env(safe-area-inset-top));
+    right:calc(18px + env(safe-area-inset-right))
+  }
+  .clock-only .clock{
+    padding-left:calc(24px + env(safe-area-inset-left));
+    padding-right:calc(24px + env(safe-area-inset-right))
+  }
+}
+@media(orientation:portrait){
+  .clock-only #time{font-size:29vw}
+  .clock-only #date{font-size:clamp(16px,4.5vw,26px)}
+}
+@media(max-height:360px) and (orientation:landscape){
+  .clock-only .clock{padding-top:54px;padding-bottom:20px}
+  .clock-only #time{font-size:min(27vw,54vh)}
+  .clock-only #date{margin-top:14px;font-size:18px}
+}
 </style>
 </head>
 
 <body>
 <main>
 
-<section class="card clock">
+<section class="card clock" aria-label="時鐘">
+  <button id="mode-toggle" class="mode-toggle" type="button"
+    aria-pressed="false" aria-controls="bus-panel">滿版時鐘</button>
   <div id="time">--:--<span id="sec">--</span></div>
   <div id="date">--</div>
 </section>
 
-<section class="card bus">
+<section id="bus-panel" class="card bus" aria-label="508 公車即時到站">
 
   <div class="top">
     <div class="route">508</div>
@@ -176,6 +231,31 @@ main{
 
   var WORKER =
     "https://508-bus.teddy-chin24.workers.dev/";
+
+  var clockOnly=false;
+  var modeButton=document.getElementById("mode-toggle");
+  try{
+    clockOnly=localStorage.getItem("508-clock-display-mode")==="clock";
+  }catch(e){}
+
+  function applyDisplayMode(){
+    document.body.classList.toggle("clock-only",clockOnly);
+    modeButton.textContent=clockOnly ? "顯示公車" : "滿版時鐘";
+    modeButton.setAttribute("aria-pressed",String(clockOnly));
+    modeButton.setAttribute("aria-label",clockOnly ? "切換為時鐘與公車時刻" : "切換為滿版時鐘");
+    document.getElementById("bus-panel").setAttribute("aria-hidden",String(clockOnly));
+  }
+
+  modeButton.addEventListener("click",function(){
+    clockOnly=!clockOnly;
+    applyDisplayMode();
+    try{
+      localStorage.setItem("508-clock-display-mode",clockOnly ? "clock" : "bus");
+    }catch(e){}
+    updateClock();
+    if(!clockOnly){refresh();}
+  });
+  applyDisplayMode();
 
   function pad(n){
     return ("0"+n).slice(-2);
@@ -245,6 +325,7 @@ main{
   }
 
   async function refresh(){
+    if(clockOnly || document.hidden){return;}
 
     var status=document.getElementById("status");
     var updated=document.getElementById("updated");
